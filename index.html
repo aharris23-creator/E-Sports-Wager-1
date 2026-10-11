@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0d12">
+  <title>E Sports Wagers — Find your next match</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c0d12;
+      --panel: #12141c;
+      --panel-raised: #171923;
+      --panel-hover: #1c1f2b;
+      --border: #252735;
+      --text: #f2f3f7;
+      --muted: #85899a;
+      --subtle: #5e6272;
+      --accent: #c3f36b;
+      --accent-dark: #18230d;
+      --purple: #a78bfa;
+      --green: #78dca4;
+      --red: #ff8585;
+      --radius: 16px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; color: var(--text); background: var(--bg); }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a { color: inherit; text-decoration: none; }
+
+    .app-shell { min-height: 100vh; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0; z-index: 5; display: flex; width: 248px; flex-direction: column;
+      padding: 25px 17px 18px; border-right: 1px solid var(--border); background: #101117;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 2px 10px 31px; }
+    .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 11px; color: #11150a; background: var(--accent); }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-name { font-size: 14px; font-weight: 760; letter-spacing: -.45px; }
+    .brand-name span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; font-weight: 550; letter-spacing: 1.65px; text-transform: uppercase; }
+    .nav-label { margin: 0 11px 10px; color: var(--subtle); font-size: 10px; font-weight: 720; letter-spacing: 1.35px; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-link {
+      display: flex; width: 100%; align-items: center; gap: 12px; padding: 11px 12px; border: 0; border-radius: 10px;
+      color: #a3a6b5; background: transparent; cursor: pointer; font-size: 13px; text-align: left; transition: .18s ease;
+    }
+    .nav-link:hover { color: var(--text); background: var(--panel-hover); }
+    .nav-link.active { color: var(--accent); background: var(--accent-dark); font-weight: 650; }
+    .nav-link svg { width: 17px; height: 17px; flex: 0 0 auto; }
+    .nav-count { margin-left: auto; padding: 2px 7px; border-radius: 20px; color: var(--accent); background: #242a1c; font-size: 10px; }
+    .sidebar-spacer { flex: 1; }
+    .safety-card { padding: 14px; border: 1px solid #2c3423; border-radius: 13px; background: linear-gradient(135deg, #191d15, #13150f); }
+    .safety-head { display: flex; align-items: center; gap: 8px; color: var(--accent); font-size: 11px; font-weight: 700; }
+    .safety-head svg { width: 15px; height: 15px; }
+    .safety-card p { margin: 8px 0 12px; color: #9b9e91; font-size: 11px; line-height: 1.55; }
+    .text-button { padding: 0; border: 0; color: var(--accent); background: transparent; cursor: pointer; font-size: 11px; font-weight: 650; }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; margin-top: 19px; padding: 13px 7px 0; border-top: 1px solid var(--border); }
+    .avatar { display: grid; width: 33px; height: 33px; flex: 0 0 auto; place-items: center; border: 1px solid #353241; border-radius: 50%; color: #ded4ff; background: #30293e; font-size: 11px; font-weight: 700; }
+    .user-copy { min-width: 0; }
+    .user-copy strong { display: block; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .user-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .user-settings { margin-left: auto; padding: 6px; border: 0; color: var(--muted); background: transparent; cursor: pointer; }
+    .user-settings svg { display: block; width: 16px; height: 16px; }
+
+    .main { min-height: 100vh; margin-left: 248px; }
+    .topbar { position: sticky; top: 0; z-index: 4; display: flex; min-height: 68px; align-items: center; justify-content: space-between; padding: 0 37px; border-bottom: 1px solid var(--border); background: rgb(12 13 18 / 92%); backdrop-filter: blur(16px); }
+    .breadcrumb { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; }
+    .breadcrumb strong { color: var(--text); font-weight: 600; }
+    .top-actions { display: flex; align-items: center; gap: 11px; }
+    .icon-button { position: relative; display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid transparent; border-radius: 10px; color: #a7a9b5; background: transparent; cursor: pointer; transition: .18s ease; }
+    .icon-button:hover { border-color: var(--border); color: var(--text); background: var(--panel); }
+    .icon-button svg { width: 17px; height: 17px; }
+    .notification-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border: 1px solid var(--bg); border-radius: 50%; background: var(--accent); }
+    .wallet-button { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); cursor: pointer; font-size: 11px; }
+    .wallet-button svg { width: 15px; height: 15px; color: var(--accent); }
+    .wallet-button span { color: var(--muted); }
+    .wallet-button strong { font-size: 12px; }
+    .mobile-brand, .mobile-nav { display: none; }
+
+    .content { max-width: 1510px; margin: 0 auto; padding: 33px 37px 46px; }
+    .welcome-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 25px; }
+    .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 10px; font-weight: 750; letter-spacing: 1.65px; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(24px, 2.5vw, 32px); font-weight: 690; letter-spacing: -1.1px; }
+    .welcome-copy { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+    .primary-button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 15px; border: 0; border-radius: 9px; color: #171c0e; background: var(--accent); cursor: pointer; font-size: 12px; font-weight: 750; transition: .18s ease; }
+    .primary-button:hover { background: #d2ff7f; transform: translateY(-1px); }
+    .primary-button svg { width: 15px; height: 15px; }
+    .secondary-button { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; color: #d6d7df; background: var(--panel-raised); cursor: pointer; font-size: 11px; font-weight: 620; transition: .18s ease; }
+    .secondary-button:hover { border-color: #3b3e4d; background: var(--panel-hover); }
+    .secondary-button svg { width: 14px; height: 14px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .stat-card { position: relative; min-height: 99px; overflow: hidden; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+    .stat-card::after { position: absolute; top: -32px; right: -27px; width: 88px; height: 88px; border: 1px solid rgb(195 243 107 / 9%); border-radius: 50%; content: ""; }
+    .stat-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; font-weight: 570; }
+    .stat-label svg { width: 14px; height: 14px; }
+    .stat-value { margin-top: 12px; font-size: 21px; font-weight: 680; letter-spacing: -.6px; }
+    .stat-note { margin-left: 6px; color: var(--green); font-size: 10px; font-weight: 560; letter-spacing: 0; }
+    .stat-note.neutral { color: var(--muted); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .section-heading h2 { margin: 0; font-size: 16px; font-weight: 680; letter-spacing: -.35px; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .heading-right { display: flex; align-items: center; gap: 9px; }
+    .live-label { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid #27352c; border-radius: 20px; color: #9ddbb5; background: #131b17; font-size: 10px; font-weight: 650; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 9px rgb(120 220 164 / 60%); }
+    .browse-layout { display: grid; grid-template-columns: minmax(0, 1fr) 278px; align-items: start; gap: 22px; }
+    .match-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .filter-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-chip { padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; color: #a1a4b1; background: transparent; cursor: pointer; font-size: 10px; font-weight: 600; transition: .18s ease; }
+    .filter-chip:hover { color: var(--text); border-color: #424555; }
+    .filter-chip.active { border-color: #3a482a; color: var(--accent); background: var(--accent-dark); }
+    .toolbar-controls { display: flex; align-items: center; gap: 7px; }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; top: 50%; left: 10px; width: 14px; height: 14px; color: var(--muted); transform: translateY(-50%); pointer-events: none; }
+    .search-input { width: 155px; height: 32px; padding: 0 9px 0 31px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--panel); font-size: 10px; }
+    .search-input::placeholder { color: #666a79; }
+    .sort-select { height: 32px; padding: 0 25px 0 9px; border: 1px solid var(--border); border-radius: 8px; color: #b6b8c2; background: var(--panel); font-size: 10px; }
+    .match-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .match-card { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 13px; background: var(--panel); transition: border-color .18s ease, transform .18s ease; }
+    .match-card:hover { border-color: #393c4c; transform: translateY(-2px); }
+    .match-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .game-tag { display: inline-flex; align-items: center; gap: 7px; color: #d5d6df; font-size: 10px; font-weight: 650; }
+    .game-icon { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 7px; color: #e3cfff; background: #30243e; font-size: 10px; font-weight: 800; }
+    .game-icon.cs { color: #ffd99f; background: #3a3022; }
+    .game-icon.rocket { color: #a9d8ff; background: #202f42; }
+    .game-icon.fortnite { color: #b8f5ed; background: #203837; }
+    .match-status { padding: 4px 7px; border: 1px solid #30303b; border-radius: 20px; color: #b9bbca; background: #1a1b24; font-size: 9px; font-weight: 600; white-space: nowrap; }
+    .match-status.hot { border-color: #47302d; color: #f2a58e; background: #241918; }
+    .match-title { overflow: hidden; margin: 13px 0 3px; font-size: 13px; font-weight: 670; letter-spacing: -.2px; text-overflow: ellipsis; white-space: nowrap; }
+    .match-subtitle { overflow: hidden; margin: 0; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .players-row { display: flex; align-items: center; gap: 9px; margin: 13px 0; }
+    .player-avatars { display: flex; padding-left: 1px; }
+    .player-avatars .avatar { width: 25px; height: 25px; margin-left: -3px; border: 2px solid var(--panel); font-size: 8px; }
+    .player-avatars .avatar:first-child { margin-left: 0; }
+    .players-label { color: var(--muted); font-size: 9px; }
+    .players-label strong { color: #d9dae1; font-weight: 620; }
+    .match-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 11px 0; border-top: 1px solid #242632; border-bottom: 1px solid #242632; }
+    .meta-label { display: block; margin-bottom: 5px; color: var(--subtle); font-size: 9px; }
+    .meta-value { color: #e5e5eb; font-size: 11px; font-weight: 650; }
+    .meta-value.prize { color: var(--accent); }
+    .rank-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 11px; }
+    .rank-pill { display: inline-flex; align-items: center; gap: 5px; color: #bab4d0; font-size: 9px; }
+    .rank-pill svg { width: 12px; height: 12px; color: var(--purple); }
+    .rank-range { color: var(--muted); font-size: 9px; }
+    .match-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+    .match-footer .secondary-button { min-height: 30px; padding: 0 9px; font-size: 10px; }
+    .join-button { min-height: 30px; padding: 0 11px; border: 1px solid #394428; border-radius: 7px; color: var(--accent); background: #1c2514; cursor: pointer; font-size: 10px; font-weight: 700; transition: .18s ease; }
+    .join-button:hover { color: #171c0e; background: var(--accent); }
+    .join-button:disabled { border-color: #28332b; color: #7ea38a; background: #172019; cursor: default; }
+    .empty-state { grid-column: 1 / -1; padding: 42px 20px; border: 1px dashed #303240; border-radius: 12px; color: var(--muted); text-align: center; }
+    .empty-state strong { display: block; margin-bottom: 7px; color: var(--text); font-size: 13px; }
+
+    .right-rail { display: grid; gap: 12px; }
+    .rail-card { padding: 15px; border: 1px solid var(--border); border-radius: 13px; background: var(--panel); }
+    .rail-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+    .rail-title h3 { margin: 0; font-size: 12px; font-weight: 680; }
+    .rail-title button { padding: 0; border: 0; color: var(--accent); background: transparent; cursor: pointer; font-size: 9px; font-weight: 650; }
+    .wallet-balance { padding: 14px; border: 1px solid #303329; border-radius: 10px; background: radial-gradient(ellipse at top right, #262b1c, #171914 72%); }
+    .wallet-caption { color: #9b9d92; font-size: 9px; }
+    .wallet-amount { margin: 6px 0 3px; font-size: 24px; font-weight: 710; letter-spacing: -.8px; }
+    .wallet-demo { color: #797d70; font-size: 9px; }
+    .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 12px; }
+    .wallet-actions button { min-height: 30px; border: 1px solid #33372d; border-radius: 7px; color: #d7dacd; background: #1c1e18; cursor: pointer; font-size: 9px; font-weight: 620; }
+    .wallet-actions button:hover { border-color: #687047; }
+    .activity-list { display: grid; gap: 12px; }
+    .activity-item { display: flex; align-items: center; gap: 9px; }
+    .activity-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border-radius: 8px; color: #b7e3c5; background: #1d2a23; }
+    .activity-icon.purple { color: #d4c3ff; background: #292238; }
+    .activity-icon svg { width: 14px; height: 14px; }
+    .activity-copy { min-width: 0; flex: 1; }
+    .activity-copy strong { display: block; overflow: hidden; font-size: 9px; font-weight: 630; text-overflow: ellipsis; white-space: nowrap; }
+    .activity-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .activity-amount { color: #b9edcb; font-size: 9px; font-weight: 650; white-space: nowrap; }
+    .activity-amount.neutral { color: #c6c5d2; }
+    .connected-list { display: grid; gap: 8px; }
+    .connected-game { display: flex; align-items: center; gap: 9px; padding: 8px; border: 1px solid #242632; border-radius: 9px; background: #15161e; }
+    .connected-game .game-icon { width: 27px; height: 27px; }
+    .connected-copy { min-width: 0; flex: 1; }
+    .connected-copy strong { display: block; font-size: 9px; font-weight: 650; }
+    .connected-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .connected-state { display: flex; align-items: center; gap: 4px; color: var(--green); font-size: 8px; }
+    .connected-state::before { width: 5px; height: 5px; border-radius: 50%; background: var(--green); content: ""; }
+    .connect-game { display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; margin-top: 9px; padding: 7px; border: 1px dashed #363847; border-radius: 8px; color: #aaadbb; background: transparent; cursor: pointer; font-size: 9px; }
+    .connect-game:hover { border-color: #6a724c; color: var(--accent); }
+    .rank-explainer { display: flex; gap: 9px; padding: 11px; border: 1px solid #2a2939; border-radius: 9px; background: #191721; }
+    .rank-explainer svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--purple); }
+    .rank-explainer p { margin: 0; color: #a6a3b4; font-size: 9px; line-height: 1.55; }
+    .rank-explainer strong { color: #d8d1ed; font-weight: 650; }
+    .disclaimer { max-width: 780px; margin: 27px auto 0; color: #777a88; font-size: 9px; line-height: 1.6; text-align: center; }
+    .practice-banner { display: flex; align-items: center; gap: 9px; margin: -8px 0 18px; padding: 9px 12px; border: 1px solid #353228; border-radius: 9px; color: #bdb69f; background: #191811; font-size: 10px; line-height: 1.5; }
+    .practice-banner strong { color: #e3d5a6; white-space: nowrap; }
+    .wager-actions { display: flex; gap: 6px; }
+    .wager-actions .join-button { flex: 1; }
+    .cancel-button { padding: 0 9px; border: 1px solid #39303a; border-radius: 7px; color: #dfa7ad; background: #21181d; cursor: pointer; font-size: 10px; }
+    .cancel-button:hover { border-color: #79434b; background: #2b1a20; }
+    .connected-game { position: relative; }
+    .disconnect-button { padding: 3px 5px; border: 0; color: #888b99; background: transparent; cursor: pointer; font-size: 8px; }
+    .disconnect-button:hover { color: var(--red); }
+    .activity-list { max-height: 250px; overflow-y: auto; }
+    .result-box { margin: 12px 0; padding: 14px; border: 1px solid #303240; border-radius: 10px; background: #101119; }
+    .result-score { display: flex; align-items: center; justify-content: center; gap: 13px; margin: 5px 0 12px; font-variant-numeric: tabular-nums; }
+    .result-score strong { font-size: 27px; font-weight: 740; }
+    .result-score span { color: var(--muted); font-size: 10px; }
+    .result-summary { margin: 0; color: #b7b8c3; font-size: 10px; line-height: 1.6; text-align: center; }
+    .leaderboard { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .leaderboard th, .leaderboard td { padding: 10px 7px; border-bottom: 1px solid var(--border); text-align: left; }
+    .leaderboard th { color: var(--muted); font-size: 9px; font-weight: 600; }
+    .leaderboard td:last-child, .leaderboard th:last-child { text-align: right; }
+    .leaderboard-rank { color: var(--accent); font-weight: 700; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 18px; background: rgb(3 4 8 / 76%); backdrop-filter: blur(6px); }
+    .modal-backdrop[hidden] { display: none; }
+    .modal { width: min(100%, 440px); max-height: min(90vh, 720px); overflow-y: auto; padding: 22px; border: 1px solid #343646; border-radius: 16px; background: #14151e; box-shadow: 0 24px 90px rgb(0 0 0 / 55%); }
+    .modal-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .modal-top h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.4px; }
+    .modal-top p { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .close-modal { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); background: transparent; cursor: pointer; }
+    .close-modal:hover { color: var(--text); background: var(--panel-hover); }
+    .close-modal svg { width: 14px; height: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-field { display: grid; gap: 6px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { color: #c6c7d0; font-size: 10px; font-weight: 620; }
+    .form-field input, .form-field select { width: 100%; height: 38px; padding: 0 10px; border: 1px solid #303240; border-radius: 8px; color: var(--text); background: #101119; font-size: 11px; }
+    .form-note { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.6; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 17px; }
+    .demo-notice { padding: 12px; border: 1px solid #353228; border-radius: 9px; color: #b7b3a5; background: #1c1a14; font-size: 10px; line-height: 1.6; }
+    .demo-notice strong { color: #e5d7a5; }
+    .verification-list { display: grid; gap: 8px; margin: 14px 0; }
+    .verification-row { display: flex; align-items: center; gap: 9px; padding: 10px; border: 1px solid var(--border); border-radius: 9px; color: #d6d6dd; font-size: 10px; }
+    .verification-row svg { width: 15px; height: 15px; color: var(--green); }
+    .toast-region { position: fixed; right: 20px; bottom: 20px; z-index: 30; display: grid; gap: 8px; }
+    .toast { max-width: min(360px, calc(100vw - 40px)); padding: 12px 15px; border: 1px solid #35432d; border-radius: 10px; color: #e7eddc; background: #1b2116; box-shadow: 0 10px 35px rgb(0 0 0 / 32%); font-size: 11px; animation: slide-in .2s ease; }
+    @keyframes slide-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 1180px) {
+      .sidebar { width: 218px; }
+      .main { margin-left: 218px; }
+      .content { padding-right: 25px; padding-left: 25px; }
+      .topbar { padding-right: 25px; padding-left: 25px; }
+      .browse-layout { grid-template-columns: minmax(0, 1fr) 248px; gap: 15px; }
+      .stats-grid { gap: 9px; }
+      .stat-card { padding: 13px; }
+    }
+    @media (max-width: 960px) {
+      .browse-layout { grid-template-columns: minmax(0, 1fr); }
+      .right-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .right-rail .rail-card:last-child { grid-column: 1 / -1; }
+      .match-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding-bottom: 63px; }
+      .topbar { min-height: 59px; padding: 0 15px; }
+      .mobile-brand { display: flex; align-items: center; gap: 8px; }
+      .mobile-brand .brand-mark { width: 29px; height: 29px; border-radius: 9px; }
+      .mobile-brand .brand-mark svg { width: 18px; height: 18px; }
+      .mobile-brand strong { font-size: 11px; }
+      .breadcrumb { display: none; }
+      .top-actions { gap: 5px; }
+      .wallet-button { padding: 7px 9px; }
+      .wallet-button span { display: none; }
+      .icon-button { width: 33px; height: 33px; }
+      .content { padding: 25px 15px 30px; }
+      .welcome-row { align-items: flex-start; margin-bottom: 19px; }
+      .welcome-row .primary-button { min-height: 35px; padding: 0 10px; font-size: 10px; }
+      .welcome-row .primary-button svg { width: 13px; height: 13px; }
+      h1 { font-size: 24px; }
+      .welcome-copy { max-width: 245px; font-size: 10px; line-height: 1.5; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 22px; }
+      .stat-card { min-height: 84px; padding: 12px; }
+      .stat-value { margin-top: 10px; font-size: 19px; }
+      .stat-label { font-size: 9px; }
+      .section-heading { align-items: flex-start; }
+      .section-heading h2 { font-size: 15px; }
+      .live-label { padding: 5px 7px; font-size: 9px; }
+      .match-toolbar { align-items: flex-start; }
+      .filter-list { width: 100%; }
+      .toolbar-controls { width: 100%; }
+      .search-wrap { flex: 1; }
+      .search-input { width: 100%; }
+      .sort-select { flex: 0 0 auto; }
+      .match-grid { grid-template-columns: 1fr; }
+      .right-rail { grid-template-columns: 1fr; }
+      .right-rail .rail-card:last-child { grid-column: auto; }
+      .mobile-nav { position: fixed; inset: auto 0 0; z-index: 10; display: grid; grid-template-columns: repeat(5, 1fr); padding: 7px 7px calc(7px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); background: rgb(16 17 23 / 96%); backdrop-filter: blur(14px); }
+      .mobile-nav .nav-link { display: grid; justify-items: center; gap: 3px; padding: 5px 2px; font-size: 8px; }
+      .mobile-nav .nav-link svg { width: 17px; height: 17px; }
+      .mobile-nav .nav-count { display: none; }
+      .disclaimer { margin-top: 20px; }
+      .practice-banner { align-items: flex-start; font-size: 9px; }
+      .practice-banner strong { padding-top: 1px; }
+    }
+    @media (max-width: 390px) {
+      .welcome-row { gap: 8px; }
+      .welcome-row .primary-button { padding: 0 8px; }
+      .welcome-copy { max-width: 205px; }
+      .wallet-button strong { font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute">
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M4 14.2 8.8 5h4.1l-2.7 5h5.1l-4.8 9h-4l2.6-4.8H4Z" fill="currentColor"/><path d="M16.2 5H20l-4.9 9h-3.8z" fill="currentColor" opacity=".52"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 5h16v4a3 3 0 0 0 0 6v4H4v-4a3 3 0 0 0 0-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 7v2m0 3v2m0 3v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8m-4-4v4m-5-18h10v5a5 5 0 0 1-10 0zM7 6H4v2a4 4 0 0 0 4 4m9-6h3v2a4 4 0 0 1-4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m19.4 15 .1.1a1.7 1.7 0 1 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 1 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 1 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 1 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 1 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 1 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 13h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v16H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1.5M3 7h15a2 2 0 0 1 2 2v2h-5a2 2 0 0 0 0 4h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-rank" viewBox="0 0 24 24"><path d="m12 2 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-9m-6 0h6v6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="5" rx="6" ry="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 5v5c0 1.7 2.7 3 6 3s6-1.3 6-3V5M3 10v5c0 1.7 2.7 3 6 3m0-7v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5m-12 0c0 1.7 2.7 3 6 3s6-1.3 6-3-2.7-3-6-3" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m6-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-7a4 4 0 0 1 0 7m6 10v-2a4 4 0 0 0-3-3.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-mark"><svg><use href="#i-mark"></use></svg></div>
+        <div class="brand-name">E Sports Wagers<span>Play fair. Play to win.</span></div>
+      </div>
+      <p class="nav-label">Menu</p>
+      <nav class="nav-list">
+        <button class="nav-link active" data-view="home"><svg><use href="#i-home"></use></svg>Overview</button>
+        <button class="nav-link" data-view="matches"><svg><use href="#i-crosshair"></use></svg>Find matches<span class="nav-count">12</span></button>
+        <button class="nav-link" data-view="wagers"><svg><use href="#i-ticket"></use></svg>My wagers<span class="nav-count" id="wager-count">0</span></button>
+        <button class="nav-link" data-view="rankings"><svg><use href="#i-trophy"></use></svg>Rankings</button>
+      </nav>
+      <div style="height:27px"></div>
+      <p class="nav-label">Account</p>
+      <nav class="nav-list">
+        <button class="nav-link" data-view="account"><svg><use href="#i-user"></use></svg>My profile</button>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="safety-card">
+        <div class="safety-head"><svg><use href="#i-shield"></use></svg>Fair play, first</div>
+        <p>Adult eligibility, fair rankings, and identity safeguards matter. Checks here are practice-only.</p>
+        <button class="text-button" data-action="verification">View safety details <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="sidebar-user">
+        <div class="avatar">JD</div>
+        <div class="user-copy"><strong id="sidebar-player-name">Jordan Davis</strong><span>Practice profile</span></div>
+        <button class="user-settings" data-action="account" aria-label="Open profile settings"><svg><use href="#i-settings"></use></svg></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-brand">
+          <div class="brand-mark"><svg><use href="#i-mark"></use></svg></div><strong>E Sports Wagers</strong>
+        </div>
+        <div class="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong id="breadcrumb-current">Overview</strong></div>
+        <div class="top-actions">
+          <button class="icon-button" data-action="notifications" aria-label="Notifications"><svg><use href="#i-bell"></use></svg><span class="notification-dot"></span></button>
+          <button class="wallet-button" data-action="wallet"><svg><use href="#i-wallet"></use></svg><span>Practice balance</span><strong id="top-balance">$125.00</strong></button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow" id="current-date"></p>
+            <h1 id="page-title">Find your next match.</h1>
+            <p class="welcome-copy" id="page-description">Fair fights, matched by rank. Your next challenge is waiting.</p>
+          </div>
+          <button class="primary-button" data-action="create"><svg><use href="#i-plus"></use></svg>Create a match</button>
+        </section>
+
+        <div class="practice-banner"><strong>PRACTICE MODE</strong><span>Match results and your balance are simulated locally. No real-money wagers, account verification, or game-platform connections.</span></div>
+
+        <section class="stats-grid" aria-label="Your player statistics">
+          <article class="stat-card">
+            <div class="stat-label"><svg><use href="#i-coins"></use></svg>Practice balance</div>
+            <div class="stat-value" id="stat-balance">$125.00</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label"><svg><use href="#i-trophy"></use></svg>Matches played</div>
+            <div class="stat-value" id="stat-matches">0</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label"><svg><use href="#i-trend"></use></svg>Win rate</div>
+            <div class="stat-value" id="stat-win-rate">0%</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label"><svg><use href="#i-rank"></use></svg>Top rank</div>
+            <div class="stat-value" id="stat-top-rank">Platinum II <span class="stat-note neutral">Valorant</span></div>
+          </article>
+        </section>
+
+        <section class="browse-section" aria-labelledby="matches-heading">
+          <div class="section-heading">
+            <div>
+              <h2 id="matches-heading">Open matches</h2>
+              <p id="matches-caption">Find a fair fight in your rank range.</p>
+            </div>
+            <div class="heading-right"><span class="live-label"><span class="live-dot"></span><span id="match-count-label">8 matches live</span></span></div>
+          </div>
+
+          <div class="browse-layout">
+            <div>
+              <div class="match-toolbar">
+                <div class="filter-list" role="group" aria-label="Filter matches by game">
+                  <button class="filter-chip active" data-filter="all">All games</button>
+                  <button class="filter-chip" data-filter="Valorant">Valorant</button>
+                  <button class="filter-chip" data-filter="Counter-Strike 2">CS2</button>
+                  <button class="filter-chip" data-filter="Rocket League">Rocket League</button>
+                  <button class="filter-chip" data-filter="Fortnite">Fortnite</button>
+                </div>
+                <div class="toolbar-controls">
+                  <label class="search-wrap">
+                    <svg><use href="#i-search"></use></svg>
+                    <input class="search-input" id="match-search" type="search" placeholder="Search matches" aria-label="Search matches">
+                  </label>
+                  <select class="sort-select" id="match-sort" aria-label="Sort matches">
+                    <option value="recommended">Recommended</option>
+                    <option value="prize">Highest prize</option>
+                    <option value="soon">Starting soon</option>
+                  </select>
+                </div>
+              </div>
+              <div class="match-grid" id="match-grid" aria-live="polite"></div>
+            </div>
+
+            <aside class="right-rail" aria-label="Your account overview">
+              <section class="rail-card">
+                <div class="rail-title"><h3>Practice wallet</h3><button data-action="wallet">View details</button></div>
+                <div class="wallet-balance">
+                  <div class="wallet-caption">Available practice balance</div>
+                  <div class="wallet-amount" id="rail-balance">$125.00</div>
+                  <div class="wallet-demo">Simulated funds · no real money</div>
+                  <div class="wallet-actions">
+                    <button data-action="add-funds">＋ Add practice funds</button>
+                    <button data-action="wallet">Activity</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="rail-card">
+                <div class="rail-title"><h3>Recent activity</h3><button data-action="activity">See all</button></div>
+                <div class="activity-list" id="activity-list">
+                  <div class="activity-item">
+                    <div class="activity-copy"><strong>No recent matches</strong><span>Your match activity will appear here.</span></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="rail-card">
+                <div class="rail-title"><h3>Connected games</h3><button data-action="connect">Manage</button></div>
+                <div class="connected-list" id="connected-list">
+                  <div class="connected-game" data-connected-game="Valorant">
+                    <span class="game-icon">V</span><div class="connected-copy"><strong>Valorant</strong><span>Practice rank · Platinum II</span></div><span class="connected-state">Linked</span><button class="disconnect-button" data-action="disconnect" data-game="Valorant" aria-label="Remove Valorant">Remove</button>
+                  </div>
+                  <div class="connected-game" data-connected-game="Rocket League">
+                    <span class="game-icon rocket">RL</span><div class="connected-copy"><strong>Rocket League</strong><span>Practice rank · Diamond I</span></div><span class="connected-state">Linked</span><button class="disconnect-button" data-action="disconnect" data-game="Rocket League" aria-label="Remove Rocket League">Remove</button>
+                  </div>
+                </div>
+                <button class="connect-game" data-action="connect"><svg width="13" height="13"><use href="#i-plus"></use></svg> Connect another game</button>
+              </section>
+
+              <section class="rank-explainer">
+                <svg><use href="#i-shield"></use></svg>
+                <p><strong>Rank-matched by design.</strong> Matchmaking uses the connected game rank shown on each listing to help avoid unfair matchups.</p>
+              </section>
+            </aside>
+          </div>
+          <p class="disclaimer">Practice mode only. Game rankings, opponent profiles, connections, and match outcomes are simulated on this device; they are not verified against a game account or determined by live gameplay. Practice credits have no cash value. No personal ID, payments, deposits, or payouts are collected or processed. Real-money play would require separate legal, age/identity, privacy, platform, and safety review.</p>
+        </section>
+      </div>
+    </main>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button class="nav-link active" data-view="home"><svg><use href="#i-home"></use></svg>Home</button>
+      <button class="nav-link" data-view="matches"><svg><use href="#i-crosshair"></use></svg>Matches</button>
+      <button class="nav-link" data-view="wagers"><svg><use href="#i-ticket"></use></svg>Wagers<span class="nav-count" id="mobile-wager-count">0</span></button>
+      <button class="nav-link" data-view="rankings"><svg><use href="#i-trophy"></use></svg>Ranks</button>
+      <button class="nav-link" data-view="account"><svg><use href="#i-user"></use></svg>Profile</button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop" id="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
+      <div class="modal-top">
+        <div><h2 id="modal-title"></h2><p id="modal-description"></p></div>
+        <button class="close-modal" data-action="close-modal" aria-label="Close dialog"><svg><use href="#i-close"></use></svg></button>
+      </div>
+      <div id="modal-content"></div>
+    </section>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    "use strict";
+    const matches = [
+      { id: 1, game: "Valorant", icon: "V", iconClass: "", title: "Competitive · 1v1 Duel", map: "Ascent · Best of 3", host: "NeonPhantom", initials: ["NP", "JD"], players: "1 / 2 players", entry: 10, prize: 18, rank: "Platinum II", range: "Gold III – Diamond I", status: "Starting soon", minutes: 8, hot: true },
+      { id: 2, game: "Counter-Strike 2", icon: "CS", iconClass: "cs", title: "Wingman · 2v2", map: "Mirage · MR12", host: "fragmaster", initials: ["FM", "AK", "JD"], players: "3 / 4 players", entry: 5, prize: 9, rank: "Gold Nova III", range: "Gold Nova I – Master Guardian", status: "Open lobby", minutes: 22, hot: false },
+      { id: 3, game: "Rocket League", icon: "RL", iconClass: "rocket", title: "1v1 Duel · Ranked", map: "DFH Stadium · 5 min", host: "FlipReset", initials: ["FR", "JD"], players: "1 / 2 players", entry: 8, prize: 14, rank: "Diamond I", range: "Platinum III – Champion I", status: "Starting soon", minutes: 12, hot: true },
+      { id: 4, game: "Fortnite", icon: "FN", iconClass: "fortnite", title: "Zero Build · 1v1", map: "Private island · First to 5", host: "StormChaser", initials: ["SC", "JD"], players: "1 / 2 players", entry: 5, prize: 9, rank: "Elite", range: "Diamond – Champion", status: "Open lobby", minutes: 30, hot: false },
+      { id: 5, game: "Valorant", icon: "V", iconClass: "", title: "Swiftplay · 1v1 Aim", map: "The Range · First to 10", host: "pixelpilot", initials: ["PP", "JD"], players: "1 / 2 players", entry: 3, prize: 5, rank: "Platinum I", range: "Gold II – Platinum III", status: "Open lobby", minutes: 18, hot: false },
+      { id: 6, game: "Counter-Strike 2", icon: "CS", iconClass: "cs", title: "Premier · 1v1", map: "Dust II · First to 16", host: "clutchking", initials: ["CK", "JD"], players: "1 / 2 players", entry: 12, prize: 22, rank: "Gold Nova II", range: "Silver Elite – Master Guardian I", status: "Starting soon", minutes: 5, hot: true },
+      { id: 7, game: "Rocket League", icon: "RL", iconClass: "rocket", title: "2v2 Doubles · Casual", map: "Mannfield · 5 min", host: "AerialAce", initials: ["AA", "JD"], players: "1 / 4 players", entry: 4, prize: 14, rank: "Diamond II", range: "Platinum III – Champion I", status: "Open lobby", minutes: 40, hot: false },
+      { id: 8, game: "Fortnite", icon: "FN", iconClass: "fortnite", title: "Build Mode · 1v1", map: "Creative · First to 5", host: "builddiff", initials: ["BD", "JD"], players: "1 / 2 players", entry: 8, prize: 14, rank: "Champion", range: "Diamond III – Elite", status: "Open lobby", minutes: 16, hot: false }
+    ];
+
+    const STORAGE_KEY = "esports-wagers-practice-v1";
+    const state = {
+      filter: "all", search: "", sort: "recommended", view: "home", wagers: [], activity: [],
+      balance: 125, nextId: 9, connected: ["Valorant", "Rocket League"], playerName: "Jordan Davis",
+      ageConfirmed: false, pendingAction: null, persistenceAvailable: true
+    };
+    const gameRanks = { Valorant: "Platinum II", "Counter-Strike 2": "Gold Nova III", "Rocket League": "Diamond I", Fortnite: "Elite" };
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const money = amount => `$${amount.toFixed(2)}`;
+    const icon = name => `<svg aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+    const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+
+    function notify(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      $("#toast-region").append(toast);
+      window.setTimeout(() => toast.remove(), 3400);
+    }
+
+    function loadState() {
+      let saved;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        saved = JSON.parse(raw);
+      } catch (error) {
+        state.persistenceAvailable = false;
+        notify("Your browser blocked saved practice data. Changes will last until you close this page.");
+        return;
+      }
+      if (!saved || saved.version !== 1) {
+        notify("Saved practice data was out of date and could not be restored.");
+        return;
+      }
+      if (Number.isFinite(saved.balance) && saved.balance >= 0 && saved.balance <= 1000000) state.balance = saved.balance;
+      if (typeof saved.playerName === "string" && saved.playerName.trim()) state.playerName = saved.playerName.slice(0, 24);
+      if (typeof saved.ageConfirmed === "boolean") state.ageConfirmed = saved.ageConfirmed;
+      if (Array.isArray(saved.connected)) state.connected = saved.connected.filter(game => Object.hasOwn(gameRanks, game));
+      const validMatches = Array.isArray(saved.matches) && saved.matches.every(match =>
+        match && Number.isInteger(match.id) && match.id > 0 && typeof match.game === "string" &&
+        Object.hasOwn(gameRanks, match.game) && ["icon", "iconClass", "title", "map", "host", "players", "rank", "range", "status"].every(key => typeof match[key] === "string") &&
+        Array.isArray(match.initials) && match.initials.every(name => typeof name === "string") &&
+        Number.isFinite(match.entry) && match.entry > 0 && Number.isFinite(match.prize) && match.prize >= 0 && Number.isFinite(match.minutes)
+      );
+      if (validMatches) {
+        matches.splice(0, matches.length, ...saved.matches);
+      }
+      if (Array.isArray(saved.wagers)) state.wagers = saved.wagers.filter(wager =>
+        wager && Number.isInteger(wager.id) && matches.some(match => match.id === wager.id) &&
+        Number.isFinite(wager.entry) && wager.entry > 0 && ["hosting", "active", "won", "lost", "cancelled"].includes(wager.status)
+      );
+      if (Array.isArray(saved.activity)) state.activity = saved.activity.filter(item => item && typeof item.message === "string" && typeof item.time === "string" && typeof item.amount === "string").slice(0, 20);
+      if (Number.isInteger(saved.nextId) && saved.nextId > 0) state.nextId = saved.nextId;
+    }
+
+    function saveState() {
+      if (!state.persistenceAvailable) return;
+      const snapshot = {
+        version: 1, balance: state.balance, playerName: state.playerName, ageConfirmed: state.ageConfirmed,
+        connected: state.connected, matches, wagers: state.wagers, activity: state.activity, nextId: state.nextId
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+      } catch (error) {
+        state.persistenceAvailable = false;
+        notify("Your browser could not save practice progress. Changes will last until you close this page.");
+      }
+    }
+
+    function addActivity(message, amount = "", kind = "ticket") {
+      state.activity.unshift({ message, amount, kind, time: new Date().toISOString() });
+      state.activity = state.activity.slice(0, 20);
+      renderActivity();
+    }
+
+    function formatTime(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Recently";
+      return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(date);
+    }
+
+    function getWager(matchId) {
+      return state.wagers.find(wager => wager.id === matchId && ["hosting", "active"].includes(wager.status));
+    }
+
+    function renderActivity() {
+      const activityList = $("#activity-list");
+      if (!state.activity.length) {
+        activityList.innerHTML = `<div class="activity-item"><div class="activity-copy"><strong>No recent matches</strong><span>Your match activity will appear here.</span></div></div>`;
+        return;
+      }
+      activityList.innerHTML = state.activity.slice(0, 5).map(item => {
+        const iconName = item.kind === "won" ? "check" : item.kind === "wallet" ? "coins" : "ticket";
+        const amountClass = item.amount.startsWith("+") ? "activity-amount" : "activity-amount neutral";
+        return `<div class="activity-item">
+          <div class="activity-icon ${item.kind === "ticket" ? "purple" : ""}">${icon(iconName)}</div>
+          <div class="activity-copy"><strong>${escapeHTML(item.message)}</strong><span>${escapeHTML(formatTime(item.time))}</span></div>
+          ${item.amount ? `<span class="${amountClass}">${escapeHTML(item.amount)}</span>` : ""}
+        </div>`;
+      }).join("");
+    }
+
+    function renderStats() {
+      const completed = state.wagers.filter(wager => ["won", "lost"].includes(wager.status));
+      const wins = completed.filter(wager => wager.status === "won").length;
+      $("#stat-matches").textContent = completed.length;
+      $("#stat-win-rate").textContent = `${completed.length ? Math.round(wins / completed.length * 100) : 0}%`;
+      const topGame = state.connected[0];
+      $("#stat-top-rank").innerHTML = topGame
+        ? `${escapeHTML(gameRanks[topGame])} <span class="stat-note neutral">${escapeHTML(topGame)}</span>`
+        : `Unranked <span class="stat-note neutral">Connect a game</span>`;
+      $("#sidebar-player-name").textContent = state.playerName;
+      const activeCount = state.wagers.filter(wager => ["hosting", "active"].includes(wager.status)).length;
+      $("#wager-count").textContent = activeCount;
+      $("#mobile-wager-count").textContent = activeCount;
+    }
+
+    function renderConnections() {
+      const list = $("#connected-list");
+      if (!state.connected.length) {
+        list.innerHTML = `<div class="empty-state">No game profiles linked yet.</div>`;
+        return;
+      }
+      list.innerHTML = state.connected.map(game => {
+        const iconText = game === "Valorant" ? "V" : game === "Counter-Strike 2" ? "CS" : game === "Rocket League" ? "RL" : "FN";
+        const iconClass = game === "Counter-Strike 2" ? "cs" : game === "Rocket League" ? "rocket" : game === "Fortnite" ? "fortnite" : "";
+        return `<div class="connected-game" data-connected-game="${escapeHTML(game)}">
+          <span class="game-icon ${iconClass}">${iconText}</span><div class="connected-copy"><strong>${escapeHTML(game)}</strong><span>Practice rank · ${escapeHTML(gameRanks[game])}</span></div>
+          <span class="connected-state">Linked</span><button class="disconnect-button" data-action="disconnect" data-game="${escapeHTML(game)}" aria-label="Remove ${escapeHTML(game)}">Remove</button>
+        </div>`;
+      }).join("");
+    }
+
+    function matchCard(match, wager = null) {
+      const owner = match.owner === true;
+      const players = wager && wager.status === "active" ? "2 / 2 players" : match.players;
+      const avatars = (match.initials || ["JD", "OP"]).map((initials, index) => `<span class="avatar" style="background:${index ? "#30293e" : "#252d35"};color:${index ? "#ded4ff" : "#c8e9d3"}">${escapeHTML(initials)}</span>`).join("");
+      let controls;
+      if (wager?.status === "hosting") {
+        controls = `<div class="wager-actions"><button class="join-button" data-action="simulate-challenger" data-id="${match.id}">Simulate challenger</button><button class="cancel-button" data-action="cancel-wager" data-id="${match.id}">Cancel lobby</button></div>`;
+      } else if (wager?.status === "active") {
+        controls = `<div class="wager-actions"><button class="join-button" data-action="simulate-result" data-id="${match.id}">Play match</button><button class="cancel-button" data-action="cancel-wager" data-id="${match.id}">Forfeit</button></div>`;
+      } else if (wager && ["won", "lost"].includes(wager.status)) {
+        controls = `<span class="match-status ${wager.status === "won" ? "" : "hot"}">${wager.status === "won" ? "Practice win" : "Practice loss"}</span><button class="secondary-button" data-action="details" data-id="${match.id}">Match details</button>`;
+      } else if (wager?.status === "cancelled") {
+        controls = `<span class="match-status">Cancelled</span><button class="secondary-button" data-action="details" data-id="${match.id}">Match details</button>`;
+      } else if (owner) {
+        controls = `<button class="join-button" data-action="details" data-id="${match.id}">Your lobby</button>`;
+      } else {
+        controls = `<div class="wager-actions"><button class="secondary-button" data-action="details" data-id="${match.id}">Details</button><button class="join-button" data-action="join" data-id="${match.id}">Join match</button></div>`;
+      }
+      const status = wager?.status === "hosting" ? "Waiting for player"
+        : wager?.status === "active" ? "Ready to play"
+        : wager?.status === "won" ? "Practice win"
+        : wager?.status === "lost" ? "Practice loss"
+        : wager?.status === "cancelled" ? "Cancelled" : match.status;
+      return `<article class="match-card">
+        <div class="match-topline"><span class="game-tag"><span class="game-icon ${escapeHTML(match.iconClass || "")}">${escapeHTML(match.icon)}</span>${escapeHTML(match.game)}</span><span class="match-status ${match.hot ? "hot" : ""}">${escapeHTML(status)}</span></div>
+        <h3 class="match-title">${escapeHTML(match.title)}</h3><p class="match-subtitle">${escapeHTML(match.map)} · Hosted by ${escapeHTML(owner ? "you" : match.host)}</p>
+        <div class="players-row"><div class="player-avatars">${avatars}</div><span class="players-label"><strong>${escapeHTML(players)}</strong></span></div>
+        <div class="match-meta"><div><span class="meta-label">Practice entry</span><span class="meta-value">${money(match.entry)}</span></div><div><span class="meta-label">Practice payout</span><span class="meta-value prize">${money(match.prize)}</span></div></div>
+        <div class="rank-row"><span class="rank-pill">${icon("rank")}${escapeHTML(match.rank)}</span><span class="rank-range">${escapeHTML(match.range)}</span></div>
+        <div class="match-footer"><span class="players-label">${icon("clock")} ${escapeHTML(match.minutes)} min</span>${controls}</div>
+      </article>`;
+    }
+
+    function renderMatches() {
+      const query = state.search.trim().toLowerCase();
+      const searchable = match => `${match.game} ${match.title} ${match.map} ${match.host} ${match.rank}`.toLowerCase().includes(query);
+      let visible;
+      if (state.view === "wagers") {
+        visible = state.wagers.map(wager => ({ wager, match: matches.find(item => item.id === wager.id) }))
+          .filter(item => item.match && (state.filter === "all" || item.match.game === state.filter) && searchable(item.match))
+          .map(item => matchCard(item.match, item.wager));
+      } else {
+        let openMatches = matches.filter(match => !match.closed && !getWager(match.id));
+        openMatches = openMatches.filter(match => (state.filter === "all" || match.game === state.filter) && searchable(match));
+        if (state.sort === "prize") openMatches.sort((a, b) => b.prize - a.prize);
+        if (state.sort === "soon") openMatches.sort((a, b) => a.minutes - b.minutes);
+        visible = openMatches.map(match => matchCard(match));
+      }
+      const grid = $("#match-grid");
+      if (!visible.length) {
+        const emptyTitle = state.view === "wagers" ? "No matches yet" : "No matches found";
+        const emptyText = state.view === "wagers" ? "Join a lobby or create your own to get started." : "Try another game, rank, or search term.";
+        grid.innerHTML = `<div class="empty-state"><strong>${emptyTitle}</strong>${emptyText}</div>`;
+      } else {
+        grid.innerHTML = visible.join("");
+      }
+      $("#match-count-label").textContent = `${visible.length} ${visible.length === 1 ? "match" : "matches"} ${state.view === "wagers" ? "in your account" : "live"}`;
+      renderStats();
+    }
+
+    function updateBalance() {
+      $("#top-balance").textContent = money(state.balance);
+      $("#stat-balance").textContent = money(state.balance);
+      $("#rail-balance").textContent = money(state.balance);
+    }
+
+    function notify(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      $("#toast-region").append(toast);
+      window.setTimeout(() => toast.remove(), 3400);
+    }
+
+    function showModal(title, description, content) {
+      $("#modal-title").textContent = title;
+      $("#modal-description").textContent = description;
+      $("#modal-content").innerHTML = content;
+      $("#modal-backdrop").hidden = false;
+      document.body.style.overflow = "hidden";
+      const firstInput = $("#modal-content input, #modal-content select, #modal-content button");
+      if (firstInput) firstInput.focus();
+      else $(".close-modal").focus();
+    }
+
+    function closeModal() {
+      $("#modal-backdrop").hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function setView(view) {
+      state.view = view;
+      const viewNames = { home: "Overview", matches: "Find matches", wagers: "My wagers", rankings: "Rankings", account: "My profile" };
+      const headings = {
+        home: ["Find your next match.", "Fair fights, matched by rank. Your next challenge is waiting.", "Open matches", "Find a fair fight in your rank range."],
+        matches: ["Find a fair match.", "Browse open lobbies with players around your rank.", "Open matches", "Filter by game, rank, or entry."],
+        wagers: ["Your matches.", "Track open lobbies, active games, and completed results.", "My matches", "Your match history and open lobbies."],
+        rankings: ["Ranked to compete.", "Game ranks help keep every matchup competitive.", "Rank-matched open matches", "Listings display the rank range for a fair matchup."],
+        account: ["Your player profile.", "Manage your player name, practice eligibility, and linked games.", "Open matches for you", "Matches display each game's practice rank."]
+      };
+      $("#breadcrumb-current").textContent = viewNames[view];
+      $("#page-title").textContent = headings[view][0];
+      $("#page-description").textContent = headings[view][1];
+      $("#matches-heading").textContent = headings[view][2];
+      $("#matches-caption").textContent = headings[view][3];
+      $$(".nav-link[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      if (view === "account") openAccount();
+      if (view === "rankings") showRankings();
+      renderMatches();
+      if (view === "matches" || view === "wagers") $(".browse-section").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function showRankings() {
+      const completed = state.wagers.filter(wager => ["won", "lost"].includes(wager.status));
+      const wins = completed.filter(wager => wager.status === "won").length;
+      const winRate = completed.length ? `${Math.round(wins / completed.length * 100)}%` : "—";
+      const game = state.connected[0];
+      const leaders = [
+        ["1", "AimTheory", "Valorant", "Radiant", "98%"],
+        ["2", "crispypixels", "Rocket League", "Grand Champion", "91%"],
+        ["3", "tapStrafe", "Counter-Strike 2", "Global Elite", "88%"],
+        ["4", state.playerName, game || "—", game ? gameRanks[game] : "Unranked", winRate],
+        ["5", "StormSignal", "Fortnite", "Champion", "64%"]
+      ];
+      const rows = leaders.map(player => `<tr><td class="leaderboard-rank">${player[0]}</td><td>${escapeHTML(player[1])}</td><td>${escapeHTML(player[2])}</td><td>${escapeHTML(player[3])}</td><td>${escapeHTML(player[4])}</td></tr>`).join("");
+      showModal("Community rankings", "Season 12 · competitive ladder · recently updated", `
+        <table class="leaderboard"><thead><tr><th>#</th><th>Player</th><th>Game</th><th>Rank</th><th>Win rate</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="demo-notice" style="margin-top:13px"><strong>Practice leaderboard.</strong> Players and stats are illustrative and aren't connected to live game accounts.</div>
+        <div class="form-actions"><button class="primary-button" data-action="close-modal">Done</button></div>`);
+    }
+
+    function openAccount() {
+      const ageStatus = state.ageConfirmed ? "18+ declaration recorded for this practice session" : "18+ declaration not completed";
+      const connections = state.connected.length ? state.connected.map(game => `<li>${escapeHTML(game)} · Practice rank ${escapeHTML(gameRanks[game])}</li>`).join("") : "<li>No linked game profiles</li>";
+      showModal("Player profile", "Your player identity and linked practice ranks.", `
+        <form id="profile-form"><div class="form-grid">
+          <div class="form-field full"><label for="profile-name">Player name</label><input id="profile-name" name="playerName" value="${escapeHTML(state.playerName)}" minlength="2" maxlength="24" required></div>
+          <div class="form-field full"><label>Age declaration</label><div class="verification-row">${icon(state.ageConfirmed ? "check" : "shield")} ${ageStatus}</div></div>
+          <div class="form-field full"><label>Linked games</label><ul>${connections}</ul></div>
+          <p class="form-note">The age declaration is not an identity check. No government ID or sensitive information is collected. Game ranks are simulated and are not synced to a platform.</p>
+        </div><div class="form-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Save profile</button></div></form>`);
+    }
+
+    function showVerification() {
+      showModal("Safety & eligibility", "Real-money play requires robust checks before participation.", `
+        <div class="demo-notice"><strong>No identity verification takes place here.</strong> The 18+ practice declaration is self-reported and is not proof of age. No ID document is requested, transmitted, or stored. Do not use this page to verify eligibility.</div>
+        <div class="verification-list">
+          <div class="verification-row">${icon("shield")} Adults only: self-declared for practice mode</div>
+          <div class="verification-row">${icon("rank")} Game ranks: practice data, not synced to an account</div>
+          <div class="verification-row">${icon("wallet")} Practice credits and results only; no real money</div>
+        </div>
+        <div class="demo-notice">A real wagering product needs legally compliant age and identity checks, jurisdiction controls, privacy/security protections, responsible-play safeguards, and supported platform integrations before users can participate.</div>
+        <div class="form-actions"><button class="primary-button" data-action="close-modal">Got it</button></div>`);
+    }
+
+    function openCreate() {
+      const options = Object.keys(gameRanks).map(game => `<option value="${escapeHTML(game)}" ${state.connected.includes(game) ? "" : "disabled"}>${escapeHTML(game)}${state.connected.includes(game) ? ` · ${escapeHTML(gameRanks[game])}` : " · link this game first"}</option>`).join("");
+      showModal("Create a match", "Open a rank-matched lobby in practice mode.", `
+        <form id="create-form">
+          <div class="form-grid">
+            <div class="form-field full"><label for="create-game">Game</label><select id="create-game" name="game" required>
+              ${options}
+            </select></div>
+            <div class="form-field"><label for="create-mode">Match format</label><select id="create-mode" name="mode"><option>1v1 Duel</option><option>2v2</option><option>Ranked match</option></select></div>
+            <div class="form-field"><label for="create-entry">Practice entry</label><select id="create-entry" name="entry"><option value="3">$3</option><option value="5" selected>$5</option><option value="10">$10</option><option value="20">$20</option></select></div>
+            <p class="form-note">Your practice balance is reserved when the lobby is posted. You can cancel before a challenger joins. No real-money wagers are made.</p>
+          </div>
+          <div class="form-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Post lobby</button></div>
+        </form>`);
+    }
+
+    function openConnect() {
+      const availableGames = Object.keys(gameRanks).filter(game => !state.connected.includes(game));
+      const options = availableGames.length ? availableGames.map(game => {
+        const connected = state.connected.includes(game);
+        const displayedRank = gameRanks[game];
+        return `<option value="${escapeHTML(game)}" ${connected ? "disabled" : ""}>${escapeHTML(game)}${connected ? " · already linked" : ` · practice rank: ${escapeHTML(displayedRank)}`}</option>`;
+      }).join("") : `<option value="" disabled selected>All available games are linked</option>`;
+      showModal("Link a game profile", "Add a practice game profile to your player card.", `
+        <form id="connect-form">
+          <div class="form-grid"><div class="form-field full"><label for="connect-game">Game profile</label><select id="connect-game" name="game" required>${options}</select></div>
+          <p class="form-note">This adds a local practice profile only. No password is requested and no gaming account is contacted.</p></div>
+          <div class="form-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button" ${availableGames.length ? "" : "disabled"}>Add practice profile</button></div>
+        </form>`);
+    }
+
+    function openWallet() {
+      showModal("Practice wallet", "Review your local balance and practice match activity.", `
+        <div class="wallet-balance"><div class="wallet-caption">Available practice balance</div><div class="wallet-amount">${money(state.balance)}</div><div class="wallet-demo">Practice credits have no cash value.</div></div>
+        <div class="verification-list"><div class="verification-row">${icon("coins")} Match entries are held in practice mode</div><div class="verification-row">${icon("shield")} No deposits, withdrawals, or payments</div></div>
+        <div class="form-actions"><button class="secondary-button" data-action="close-modal">Close</button><button class="primary-button" data-action="add-funds">Add $25 practice credits</button></div>`);
+    }
+
+    function openActivity() {
+      const entries = state.activity.length ? state.activity.map(item => `<div class="activity-item">
+        <div class="activity-icon ${item.kind === "ticket" ? "purple" : ""}">${icon(item.kind === "won" ? "check" : item.kind === "wallet" ? "coins" : "ticket")}</div>
+        <div class="activity-copy"><strong>${escapeHTML(item.message)}</strong><span>${escapeHTML(formatTime(item.time))}</span></div>
+        ${item.amount ? `<span class="${item.amount.startsWith("+") ? "activity-amount" : "activity-amount neutral"}">${escapeHTML(item.amount)}</span>` : ""}
+      </div>`).join("") : `<div class="empty-state"><strong>No activity yet</strong>Join or create a practice match to get started.</div>`;
+      showModal("Match activity", "Your practice match entries, results, and balance changes.", `<div class="activity-list">${entries}</div>
+        <div class="form-actions"><button class="primary-button" data-action="close-modal">Done</button></div>`);
+    }
+
+    function showAgeGate(action) {
+      state.pendingAction = action;
+      showModal("Adults only", "Confirm your age declaration to enter practice mode.", `
+        <div class="demo-notice"><strong>Self-declaration only.</strong> This checkbox does not verify your age or identity. No real-money play is available in this prototype.</div>
+        <form id="age-form"><div class="form-field full" style="margin-top:14px"><label><input type="checkbox" name="adult" required> I confirm I am 18 or older. This declaration is only for this local practice simulation.</label></div>
+        <div class="form-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Continue</button></div></form>`);
+    }
+
+    function continueProtectedAction(action) {
+      if (!state.ageConfirmed) {
+        showAgeGate(action);
+        return;
+      }
+      if (action === "create" && !state.connected.length) {
+        notify("Link a game profile before posting a rank-matched lobby.");
+        openConnect();
+      } else if (action === "create") openCreate();
+      else if (action.startsWith("join:")) joinMatch(Number(action.slice(5)));
+    }
+
+    function joinMatch(id) {
+      const match = matches.find(item => item.id === id);
+      if (!match || match.closed || match.owner || getWager(id)) return;
+      if (!state.connected.includes(match.game)) {
+        notify(`Link a ${match.game} practice profile before joining a rank-matched lobby.`);
+        openConnect();
+        return;
+      }
+      if (state.balance < match.entry) {
+        notify(`You need ${money(match.entry)} in practice credits to join this match.`);
+        openWallet();
+        return;
+      }
+      state.balance -= match.entry;
+      state.wagers.unshift({ id, entry: match.entry, status: "active", joinedAt: new Date().toISOString() });
+      match.initials = ["OP", "JD"];
+      match.players = "2 / 2 players";
+      match.minutes = 0;
+      match.status = "Ready to play";
+      addActivity(`Entry reserved · ${match.game}`, `−${money(match.entry)}`, "ticket");
+      updateBalance();
+      saveState();
+      closeModal();
+      renderMatches();
+      notify("Match joined. Simulate a result from My wagers when you're ready.");
+    }
+
+    function openMatchDetails(id) {
+      const match = matches.find(item => item.id === id);
+      if (!match) return;
+      const wager = getWager(id);
+      const owner = match.owner === true;
+      const existingWager = state.wagers.find(item => item.id === id);
+      let actionButton = "";
+      if (wager?.status === "hosting") actionButton = `<button class="primary-button" data-action="simulate-challenger" data-id="${id}">Simulate challenger</button>`;
+      else if (wager?.status === "active") actionButton = `<button class="primary-button" data-action="simulate-result" data-id="${id}">Play match</button>`;
+      else if (existingWager && ["won", "lost"].includes(existingWager.status)) actionButton = `<button class="primary-button" data-action="close-modal">Done</button>`;
+      else if (!owner && !match.closed) actionButton = `<button class="primary-button" data-action="join" data-id="${id}">Join for ${money(match.entry)}</button>`;
+      showModal(match.title, `${match.game} · ${match.map}`, `
+        <div class="match-meta"><div><span class="meta-label">Player entry</span><span class="meta-value">${money(match.entry)} practice credits</span></div><div><span class="meta-label">Winner payout</span><span class="meta-value prize">${money(match.prize)} practice credits</span></div></div>
+        <div class="verification-list"><div class="verification-row">${icon("rank")} Rank: ${escapeHTML(match.rank)} · Range ${escapeHTML(match.range)}</div>
+          <div class="verification-row">${icon("users")} ${escapeHTML(match.players)} · Hosted by ${escapeHTML(owner ? "you" : match.host)}</div></div>
+        <div class="demo-notice"><strong>Practice simulation.</strong> Joining reserves credits on this device. Match results are randomly simulated here; the game itself is not launched, observed, or scored.</div>
+        <div class="form-actions"><button class="secondary-button" data-action="close-modal">Close</button>${actionButton}</div>`);
+    }
+
+    function cancelWager(id) {
+      const wager = getWager(id);
+      if (!wager) return;
+      if (wager.status === "active") {
+        showModal("Forfeit this match?", "This practice match will be recorded as a loss and your reserved entry will not be returned.", `
+          <div class="demo-notice">Forfeit ${money(wager.entry)} practice credits? This only changes your local practice balance.</div>
+          <div class="form-actions"><button class="secondary-button" data-action="close-modal">Keep playing</button><button class="cancel-button" data-action="confirm-forfeit" data-id="${id}">Forfeit match</button></div>`);
+        return;
+      }
+      wager.status = "cancelled";
+      state.balance += wager.entry;
+      const match = matches.find(item => item.id === id);
+      if (match) match.closed = true;
+      addActivity(`Lobby cancelled · ${match?.game || "match"}`, `+${money(wager.entry)}`, "wallet");
+      updateBalance();
+      saveState();
+      renderMatches();
+      notify("Lobby cancelled. Your practice entry was returned.");
+    }
+
+    function simulateChallenger(id) {
+      const wager = getWager(id);
+      const match = matches.find(item => item.id === id);
+      if (!wager || wager.status !== "hosting" || !match) return;
+      wager.status = "active";
+      match.initials = ["OP", "JD"];
+      match.players = "2 / 2 players";
+      match.minutes = 0;
+      match.status = "Ready to play";
+      addActivity(`Challenger joined · ${match.game}`);
+      saveState();
+      closeModal();
+      renderMatches();
+      notify("A practice challenger joined. Your match is ready.");
+    }
+
+    function simulateResult(id) {
+      const wager = getWager(id);
+      const match = matches.find(item => item.id === id);
+      if (!wager || wager.status !== "active" || !match) return;
+      const won = Math.random() < 0.5;
+      let winnerScore;
+      let loserScore;
+      if (match.game === "Rocket League") {
+        winnerScore = 3 + Math.floor(Math.random() * 4);
+        loserScore = Math.floor(Math.random() * Math.min(winnerScore, 3));
+      } else {
+        winnerScore = match.game === "Valorant" || match.game === "Counter-Strike 2" ? 13 : 5;
+        loserScore = Math.floor(Math.random() * (winnerScore - 1));
+      }
+      const playerScore = won ? winnerScore : loserScore;
+      const opponentScore = won ? loserScore : winnerScore;
+      wager.status = won ? "won" : "lost";
+      wager.result = { won, playerScore, opponentScore, payout: won ? match.prize : 0, time: new Date().toISOString() };
+      match.closed = true;
+      match.status = won ? "Practice win" : "Practice loss";
+      if (won) state.balance += match.prize;
+      addActivity(`${won ? "Practice win" : "Practice loss"} · ${match.game}`, won ? `+${money(match.prize)}` : "", won ? "won" : "ticket");
+      updateBalance();
+      saveState();
+      renderMatches();
+      showModal(won ? "Victory" : "Match complete", `${match.game} · ${match.title}`, `
+        <div class="result-box"><div class="result-score"><strong>${playerScore}</strong><span>YOU</span><span>—</span><span>OPPONENT</span><strong>${opponentScore}</strong></div>
+        <p class="result-summary">${won ? `You won ${money(match.prize)} in practice credits.` : `Your ${money(wager.entry)} practice entry was not returned.`} Match outcome generated by a 50/50 local simulation.</p></div>
+        <div class="demo-notice"><strong>No gameplay was recorded.</strong> Scores are randomly simulated and are not linked to Valorant, Steam, console, or any game server.</div>
+        <div class="form-actions"><button class="primary-button" data-action="close-modal">Back to matches</button></div>`);
+    }
+
+    function handleAction(action, button) {
+      const id = Number(button.dataset.id);
+      if (action === "create") continueProtectedAction("create");
+      else if (action === "verification") showVerification();
+      else if (action === "account") openAccount();
+      else if (action === "connect") openConnect();
+      else if (action === "wallet") openWallet();
+      else if (action === "activity") openActivity();
+      else if (action === "close-modal") closeModal();
+      else if (action === "notifications") openActivity();
+      else if (action === "details") openMatchDetails(id);
+      else if (action === "join") {
+        if (!state.ageConfirmed) showAgeGate(`join:${id}`);
+        else joinMatch(id);
+      } else if (action === "simulate-result") simulateResult(id);
+      else if (action === "simulate-challenger") simulateChallenger(id);
+      else if (action === "cancel-wager") cancelWager(id);
+      else if (action === "confirm-forfeit") {
+        const wager = getWager(id);
+        if (!wager || wager.status !== "active") return;
+        wager.status = "lost";
+        wager.result = { won: false, payout: 0, time: new Date().toISOString() };
+        const match = matches.find(item => item.id === id);
+        if (match) match.closed = true;
+        addActivity(`Forfeit · ${match?.game || "match"}`, "", "ticket");
+        saveState();
+        closeModal();
+        renderMatches();
+        notify("Match forfeited. Your entry remains spent in this practice simulation.");
+      } else if (action === "add-funds") {
+        state.balance += 25;
+        addActivity("Practice credits added", `+${money(25)}`, "wallet");
+        updateBalance();
+        saveState();
+        closeModal();
+        notify(`Added ${money(25)} in practice credits. No payment was made.`);
+      } else if (action === "disconnect") {
+        const game = button.dataset.game;
+        if (state.wagers.some(wager => wager.status === "active" && matches.find(match => match.id === wager.id)?.game === game)) {
+          notify("Finish or forfeit your active match before removing this game profile.");
+          return;
+        }
+        state.connected = state.connected.filter(item => item !== game);
+        renderConnections();
+        renderStats();
+        saveState();
+        notify(`${game} practice profile removed.`);
+      }
+    }
+
+    document.addEventListener("click", event => {
+      const target = event.target instanceof Element ? event.target.closest("[data-action], [data-view], [data-filter]") : null;
+      if (!target) {
+        if (event.target === $("#modal-backdrop")) closeModal();
+        return;
+      }
+      if (target.dataset.view) {
+        setView(target.dataset.view);
+        return;
+      }
+      if (target.dataset.filter) {
+        state.filter = target.dataset.filter;
+        $$(".filter-chip").forEach(chip => chip.classList.toggle("active", chip === target));
+        renderMatches();
+        return;
+      }
+      if (target.dataset.action) handleAction(target.dataset.action, target);
+    });
+
+    document.addEventListener("submit", event => {
+      if (event.target.id === "create-form") {
+        event.preventDefault();
+        const form = new FormData(event.target);
+        const game = form.get("game");
+        const entry = Number(form.get("entry"));
+        const mode = form.get("mode");
+        if (typeof game !== "string" || !Object.hasOwn(gameRanks, game) || !state.connected.includes(game) || !Number.isFinite(entry) || entry <= 0) {
+          notify("Choose a linked game and a valid practice entry.");
+          return;
+        }
+        if (state.balance < entry) {
+          closeModal();
+          notify(`You need ${money(entry)} in practice credits to post this lobby.`);
+          openWallet();
+          return;
+        }
+        const rank = gameRanks[game];
+        const id = state.nextId++;
+        matches.unshift({ id, game, icon: game === "Valorant" ? "V" : game === "Counter-Strike 2" ? "CS" : game === "Rocket League" ? "RL" : "FN", iconClass: game === "Counter-Strike 2" ? "cs" : game === "Rocket League" ? "rocket" : game === "Fortnite" ? "fortnite" : "", title: `${mode} · Open lobby`, map: "Rank-matched lobby · Best of 3", host: state.playerName, initials: ["JD"], players: "1 / 2 players", entry, prize: Math.round(entry * 1.8 * 100) / 100, rank, range: `${rank} ± 2 divisions`, status: "Open lobby", minutes: 30, hot: false, owner: true });
+        state.balance -= entry;
+        state.wagers.unshift({ id, entry, status: "hosting", joinedAt: new Date().toISOString() });
+        addActivity(`Lobby posted · ${game}`, `−${money(entry)}`, "ticket");
+        updateBalance();
+        saveState();
+        closeModal();
+        state.filter = "all";
+        $$(".filter-chip").forEach(chip => chip.classList.toggle("active", chip.dataset.filter === "all"));
+        setView("wagers");
+        notify("Lobby posted. Simulate a challenger from My matches.");
+      }
+      if (event.target.id === "connect-form") {
+        event.preventDefault();
+        const game = new FormData(event.target).get("game");
+        if (typeof game !== "string" || !Object.hasOwn(gameRanks, game) || state.connected.includes(game)) return;
+        state.connected.push(game);
+        renderConnections();
+        renderStats();
+        saveState();
+        closeModal();
+        notify(`${game} practice profile added. No external account was accessed.`);
+      }
+      if (event.target.id === "profile-form") {
+        event.preventDefault();
+        const name = new FormData(event.target).get("playerName");
+        if (typeof name !== "string" || name.trim().length < 2 || name.trim().length > 24) {
+          notify("Player name must be between 2 and 24 characters.");
+          return;
+        }
+        state.playerName = name.trim();
+        renderStats();
+        saveState();
+        closeModal();
+        notify("Player profile saved.");
+      }
+      if (event.target.id === "age-form") {
+        event.preventDefault();
+        if (!new FormData(event.target).has("adult")) return;
+        state.ageConfirmed = true;
+        saveState();
+        const action = state.pendingAction;
+        state.pendingAction = null;
+        if (action) continueProtectedAction(action);
+        else closeModal();
+      }
+    });
+
+    $("#match-search").addEventListener("input", event => { state.search = event.target.value; renderMatches(); });
+    $("#match-sort").addEventListener("change", event => { state.sort = event.target.value; renderMatches(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape" && !$("#modal-backdrop").hidden) closeModal(); });
+    $("#current-date").textContent = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(new Date());
+    loadState();
+    renderConnections();
+    renderActivity();
+    renderMatches();
+    updateBalance();
+    saveState();
+  </script>
+</body>
+</html>
